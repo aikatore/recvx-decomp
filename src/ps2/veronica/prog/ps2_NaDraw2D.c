@@ -213,16 +213,32 @@ void njDrawPolygon2DM(NJS_POINT2COL* p, int n, float pri, unsigned int attr)
                 *(int*)&bp[0][1] = (p->tex[i].tex.v * 16) + 8;
                 break;
             case 1:
+            #ifndef TARGET_PC
+                *(int*)&bp[0][0] = (p->tex[i].tex.u * 16) - 8;
+            #else
                 *(int*)&bp[0][0] = (p->tex[i].tex.u * 16) + 4;
+            #endif
                 *(int*)&bp[0][1] = (p->tex[i].tex.v * 16) + 8;
                 break;
             case 2:
+            #ifndef TARGET_PC
+                *(int*)&bp[0][0] = (p->tex[i].tex.u * 16) - 8;
+            #else
                 *(int*)&bp[0][0] = (p->tex[i].tex.u * 16) + 4;
+            #endif
+            #ifndef TARGET_PC
+                *(int*)&bp[0][1] = (p->tex[i].tex.v * 16) - 8;
+            #else 
                 *(int*)&bp[0][1] = (p->tex[i].tex.v * 16) + 4;
+            #endif
                 break;
             case 3:
                 *(int*)&bp[0][0] = (p->tex[i].tex.u * 16) + 8;
+            #ifndef TARGET_PC
+                *(int*)&bp[0][1] = (p->tex[i].tex.v * 16) - 8;
+            #else
                 *(int*)&bp[0][1] = (p->tex[i].tex.v * 16) + 4;
+            #endif
                 break;
             }
             
