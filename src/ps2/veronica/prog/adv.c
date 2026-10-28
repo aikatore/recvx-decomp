@@ -1039,7 +1039,11 @@ float AdvEasyDispMessage(float PosX, float PosY, unsigned int MessageNo)
                 SizeX += 14.0f; 
                 break; 
             default: 
+#ifdef TARGET_PC
+                SizeX += (pc_font_width(nmp[x]) >= 0) ? pc_font_width(nmp[x]) : FontSz[nmp[x]];   /* a language's font */
+#else
                 SizeX += FontSz[nmp[x]]; 
+#endif
                 break; 
             } 
         } 
@@ -1125,7 +1129,11 @@ float AutoSaveLoadEasyDispMessage(float PosX, float PosY, unsigned char* ucpMsbT
                 SizeX += 14.0f * FontScaleX; 
                 break; 
             default: 
+#ifdef TARGET_PC
+                SizeX += FontScaleX * ((pc_font_width(nmp[x]) >= 0) ? pc_font_width(nmp[x]) : FontSz[nmp[x]]);   /* a language's font */
+#else
                 SizeX += FontScaleX * FontSz[nmp[x]]; 
+#endif
                 break; 
             } 
         } 
@@ -1664,6 +1672,13 @@ void DisplayTitleBg()
     
     AdvEasyDrawTextureS(1, 0xFFFFFFFF, qp, 0.15f, 1, 192); 
     
+#ifdef TARGET_PC
+    if (lang_picture(2) != 0)   /* a European title picture: its copyright is the first block alone (pc/glue/lang_glue.c) */
+    {
+        return;
+    }
+    
+#endif
     SetQuadPos(348.0f, 418.0f, 240.0f, 32.0f, qp); 
     SetQuadUv2(272.0f, 432.0f, 240.0f, 32.0f, 1, qp); 
     

@@ -1009,6 +1009,15 @@ void bhDispTimeEx(NJS_POINT2* pos, unsigned int flg, int time, unsigned int argb
 // this function is not present on the Japanese version
 float bhGetFontSize(unsigned short code)
 {
+#ifdef TARGET_PC
+    float w = pc_font_width(code);   /* a language's font: its own widths (pc/glue/lang_glue.c) */
+
+    if (w >= 0)
+    {
+        return w;
+    }
+
+#endif
     if (code >= 108) 
     {
         return 0;

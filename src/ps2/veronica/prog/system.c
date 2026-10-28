@@ -2728,7 +2728,11 @@ void EasyDispMessage(float PosY, unsigned int MessageNo)
                 SizeX += 14.0f * FontScaleX; 
                 break; 
             default: 
+#ifdef TARGET_PC
+                SizeX += FontScaleX * ((pc_font_width(nmp[x]) >= 0) ? pc_font_width(nmp[x]) : FontSz[nmp[x]]);   /* a language's font */
+#else
                 SizeX += FontScaleX * FontSz[nmp[x]]; 
+#endif
                 break; 
             } 
         } 
