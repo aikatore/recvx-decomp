@@ -2871,7 +2871,11 @@ int DisplayOptionPlateLevel0(int PortId, int Flag)
         {
             ForceCursorMoveFlag = 1;
             
+#ifndef TARGET_PC
             ap->OptIndex = 5;
+#else
+            ap->OptIndex = 7;   /* ENHANCED SETTINGS, below it in DEFAULT's place */
+#endif
         }
     }
     
@@ -2904,13 +2908,16 @@ int DisplayOptionPlateLevel0(int PortId, int Flag)
                 
                 ReturnCode = OptionDef[ap->OptIndex].NextLevel;
             } 
+#ifndef TARGET_PC
             else if (ap->OptIndex == 5) 
             {
                 ResetOptionMenuParam(2);
                 
                 CallSystemSe(0, 3);
             }
-#ifdef TARGET_PC
+#else
+            /* DEFAULT (ResetOptionMenuParam(2): key type, screen position, sound and vibration back to their
+               defaults) is not offered: ENHANCED SETTINGS has its place */
             else if (ap->OptIndex == 8)   /* RETURN TO TITLE: its question, NO preselected */
             {
                 pc_options_quit_open();
@@ -2921,33 +2928,7 @@ int DisplayOptionPlateLevel0(int PortId, int Flag)
         } 
         else
         {
-#ifdef TARGET_PC
-            /* ENHANCED SETTINGS sits right of EXIT: right/left move between the two (as STEREO / MONO),
-               up from it goes to the row above EXIT */
-            if ((ap->OptIndex == 6 && (Pad[PortId].press & 0x2000)) || (ap->OptIndex == 7 && (Pad[PortId].press & 0x8000)))
-            {
-                ap->OptIndex = 13 - ap->OptIndex;
-                CallSystemSe(0, 2);
-            }
-            else if (ap->OptIndex == 7 && (Pad[PortId].Rept & 0x1000))
-            {
-                ap->OptIndex = (sys->tk_flg & 0x80) ? 8 : 5;
-                CallSystemSe(0, 2);
-            }
-            /* RETURN TO TITLE, in a game only, sits right of DEFAULT above ENHANCED SETTINGS: right/left
-               move between DEFAULT and it, down goes to ENHANCED SETTINGS, up to the row above */
-            else if ((sys->tk_flg & 0x80) && ((ap->OptIndex == 5 && (Pad[PortId].press & 0x2000)) || (ap->OptIndex == 8 && (Pad[PortId].press & 0x8000))))
-            {
-                ap->OptIndex = 13 - ap->OptIndex;
-                CallSystemSe(0, 2);
-            }
-            else if (ap->OptIndex == 8 && (Pad[PortId].Rept & 0x5000))
-            {
-                ap->OptIndex = (Pad[PortId].Rept & 0x4000) ? 7 : (PuruFindFlag != 0) ? 4 : 3;
-                CallSystemSe(0, 2);
-            }
-            else
-#endif
+#ifndef TARGET_PC
             if (ForceCursorMoveFlag == 0) 
             {
                 if ((Pad[PortId].Rept & 0x1000)) 
@@ -2970,11 +2951,7 @@ int DisplayOptionPlateLevel0(int PortId, int Flag)
                 } 
                 else if ((Pad[PortId].Rept & 0x4000)) 
                 {
-#ifndef TARGET_PC
                     if (ap->OptIndex == 6) 
-#else
-                    if (ap->OptIndex >= 6)   /* EXIT and ENHANCED SETTINGS (right of it): down wraps to the top */
-#endif
                     {
                         ap->OptIndex = 0;
                     } 
@@ -2991,6 +2968,27 @@ int DisplayOptionPlateLevel0(int PortId, int Flag)
                     CallSystemSe(0, 2);
                 }
             }
+            
+#else
+            /* the rows' grid (pc/glue/options_glue.c pc_options_move): ENHANCED SETTINGS in DEFAULT's place,
+               RETURN TO TITLE (in a game) in EXIT's, EXIT at the bottom right */
+            if (ForceCursorMoveFlag == 0) 
+            {
+                int Next = ap->OptIndex;
+                
+                if ((Pad[PortId].Rept & 0x1000)) Next = pc_options_move(ap->OptIndex, 0, PuruFindFlag);
+                else if ((Pad[PortId].Rept & 0x4000)) Next = pc_options_move(ap->OptIndex, 1, PuruFindFlag);
+                else if ((Pad[PortId].press & 0x8000)) Next = pc_options_move(ap->OptIndex, 2, PuruFindFlag);
+                else if ((Pad[PortId].press & 0x2000)) Next = pc_options_move(ap->OptIndex, 3, PuruFindFlag);
+                
+                if (Next != ap->OptIndex) 
+                {
+                    ap->OptIndex = Next;
+                    
+                    CallSystemSe(0, 2);
+                }
+            }
+#endif
             
             if ((Pad[PortId].press & 0x8000)) 
             {
@@ -3098,7 +3096,11 @@ int DisplayOptionPlateLevel0(int PortId, int Flag)
     SetQuadPos(96.0f, 96.0f, 448.0f, 48.0f, &qp[13]);
     SetQuadUv2(0, 320.0f, 448.0f, 48.0f, 2, &qp[13]);
     
+#ifndef TARGET_PC
     for (i = 0; i < 7; i++) 
+#else
+    for (i = 0; i < 5; i++)   /* DEFAULT is gone; EXIT, ENHANCED SETTINGS and RETURN TO TITLE: pc_options_rows0 */
+#endif
     {
         Alpha = 255;
         
@@ -3184,7 +3186,7 @@ int DisplayOptionPlateLevel0(int PortId, int Flag)
     }
     
 #ifdef TARGET_PC
-    pc_options_rows0();   /* ENHANCED SETTINGS right of EXIT, RETURN TO TITLE right of DEFAULT (in a game), its question */
+    pc_options_rows0();   /* ENHANCED SETTINGS, RETURN TO TITLE (in a game), EXIT, RETURN TO TITLE's question */
 #endif
     
     AdvEasyDrawTexture(1, -1, &Qtex[14], 0.05f, 1);
