@@ -7869,7 +7869,12 @@ void ItemBoxChange(S_WORK* st, unsigned short ibcsr)
             return;
         }
 
+#ifdef TARGET_PC
+        /* BioRand can place these long before they're needed, so a BioRand game lets Claire box them (pc/glue/biorand_glue.c) */
+        if (((itemdata[id1].type & 0x40)) && ((id1 == 105) || (id1 == 106) || (id1 == 121)) && !pc_biorand_box_any())
+#else
         if (((itemdata[id1].type & 0x40)) && ((id1 == 105) || (id1 == 106) || (id1 == 121)))
+#endif
         {
             swork.statusflg &= ~0x100000;
                 
