@@ -1177,6 +1177,16 @@ void bhKaidanPlayerMotion(int flg, int idx)
 
     exp = &rom->etcp[idx];
     
+#ifdef TARGET_PC
+    /* a player already on other stairs (in co-op the partner's scene runs here at any moment: the palace main
+       hall's first descent, 1/02, caught a player on the side stairs): those stairs are left as its climb's end
+       would leave them, else their "in use" mark (attr 0x400000) stayed and they took nobody until the room
+       was entered again (docs/COOP.md "World events and records") */
+    if ((plp->kdnp != NULL) && ((plp->stflg & 0x10)))
+    {
+        bhClrUseKaidanFlag(plp);
+    }
+#endif
     bhSetUseKaidanFlag(plp, exp, idx);
     
     plp->stflg |= 0x80010010;
