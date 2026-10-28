@@ -1701,6 +1701,15 @@ void DisplayPressStartPlate(float FadeRate)
     temp = 0.5f;
     
     AdvEasyDrawTextureS(1, ((unsigned int)FadeRate << 24) | 0xFFFFFF, qp, FadeRate, 1, temp);
+#ifdef TARGET_PC
+    if (lang_picture(2) == 1)   /* the French title picture: "APPUYEZ SUR" on the row above (pc/glue/lang_glue.c) */
+    {
+        SetQuadPos(64.0f, 272.0f, 512.0f, 32.0f, qp);
+        SetQuadUv2(0, 0.0f, 512.0f, 32.0f, 1, qp);
+        AdvEasyDrawTextureS(1, ((unsigned int)FadeRate << 24) | 0xFFFFFF, qp, FadeRate, 1, temp);
+    }
+
+#endif
 }
 
 // 95.58% matching
