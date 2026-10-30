@@ -1659,5 +1659,9 @@ int PlayPageCheck()
         page_end00 = 7;
     }
     
+#ifdef TARGET_PC
+    return pc_lang_page_end(page_end00);   /* the language's manual hides other pages (pc/glue/lang_glue.c) */
+#else
     return page_end00;
+#endif
 }
