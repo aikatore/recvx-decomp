@@ -490,7 +490,12 @@ void bhControlEnemy()
     plp->ofz = 0;
     plp->ofx = 0;
     
+#ifdef TARGET_PC
+    /* co-op: the host's examine pauses its enemies, not the partner's game (coop_glue.c coop_enemies_run) */
+    if ((sys->sp_flg & 0x2) || (coop_on && coop_enemies_run()))
+#else
     if ((sys->sp_flg & 0x2)) 
+#endif
     {
         ep = ene;
         
