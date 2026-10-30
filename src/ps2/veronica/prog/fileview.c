@@ -1165,6 +1165,13 @@ void PageScroll()
         fv->pagewait00--;
     }
     
+#ifdef TARGET_PC
+    if (pc_lang_file_page(parts_22b->pos[0], 64.0f, fv->filenum, fv->bufnum - 280 - fsheader[fv->filenum]))   /* the Japanese file pages are pictures (pc/glue/lang_glue.c) */
+    {
+        return;
+    }
+
+#endif
     bhDispMessage(parts_22b->pos[0], 64.0f, -1.0f, 1, fv->bufnum, 0, 0);
 }
 

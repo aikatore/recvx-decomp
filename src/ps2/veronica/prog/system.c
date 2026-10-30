@@ -2524,7 +2524,11 @@ void bhSysCallScreenSaver()
     case 10:
         sys->ssv_an = 64.0f;
         
+#ifdef TARGET_PC
+        sys->mes_tp = (unsigned short*)pc_lang_mes(2, pause_mes);   /* the language's (pc/glue/lang_glue.c) */
+#else
         sys->mes_tp = pause_mes;
+#endif
         
         bhDispMessage(280.0f, 188.0f, -0.9f, 2, 0, 0, 0);
         
@@ -2725,7 +2729,11 @@ void EasyDispMessage(float PosY, unsigned int MessageNo)
                 SearchFlag = 0; 
                 break; 
             case 65281:
-                SizeX += 14.0f * FontScaleX; 
+#ifdef TARGET_PC
+                SizeX += pc_font_space() * FontScaleX;   /* a language's space (pc/glue/lang_glue.c) */
+#else
+                SizeX += 14.0f * FontScaleX;
+#endif
                 break; 
             default: 
 #ifdef TARGET_PC

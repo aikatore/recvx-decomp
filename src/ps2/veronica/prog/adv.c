@@ -1036,7 +1036,11 @@ float AdvEasyDispMessage(float PosX, float PosY, unsigned int MessageNo)
                 SearchFlag = 0; 
                 break; 
             case 65281:
-                SizeX += 14.0f; 
+#ifdef TARGET_PC
+                SizeX += pc_font_space();   /* a language's space (pc/glue/lang_glue.c) */
+#else
+                SizeX += 14.0f;
+#endif
                 break; 
             default: 
 #ifdef TARGET_PC
@@ -1126,7 +1130,11 @@ float AutoSaveLoadEasyDispMessage(float PosX, float PosY, unsigned char* ucpMsbT
                 SearchFlag = 0; 
                 break; 
             case 65281:
-                SizeX += 14.0f * FontScaleX; 
+#ifdef TARGET_PC
+                SizeX += pc_font_space() * FontScaleX;   /* a language's space (pc/glue/lang_glue.c) */
+#else
+                SizeX += 14.0f * FontScaleX;
+#endif
                 break; 
             default: 
 #ifdef TARGET_PC
@@ -1673,7 +1681,7 @@ void DisplayTitleBg()
     AdvEasyDrawTextureS(1, 0xFFFFFFFF, qp, 0.15f, 1, 192); 
     
 #ifdef TARGET_PC
-    if (lang_picture(2) != 0)   /* a European title picture: its copyright is the first block alone (pc/glue/lang_glue.c) */
+    if (lang_eu_picture(2))   /* a European title picture: its copyright is the first block alone (pc/glue/lang_glue.c) */
     {
         return;
     }
