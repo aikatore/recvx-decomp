@@ -30,6 +30,8 @@
 #include "../../../ps2/veronica/prog/light.h"
 #include "../../../ps2/veronica/prog/objitm.h"
 #include "../../../ps2/veronica/prog/weapon.h"
+#include "../../../ps2/veronica/prog/item.h"
+#include "pc_rules.h"
 #endif
 
 #pragma optimization_level 4 // TODO: remove this pragma and compile the file passing the -O4,p flag instead 
@@ -8819,10 +8821,27 @@ unsigned int bhPlItemChangeM()
         {
             sys->itm[cnt] = v1 << 16;
 
+#ifdef TARGET_PC
+            if (coop_on)
+            {
+                coop_item_granted(v1);
+            }
+#endif
             return 1;
         }
     }
 
+#ifdef TARGET_PC
+    /* Its one user, 3/10's skip of Steve's swap (event 27), trades the sub machine guns for the Gold Lugers, which the
+       unskipped scene (event 3) hands over whatever the bag holds. In co-op the player on the swap's floor often has
+       no sub machine guns (the partner took them, or its copy still lies on the catwalk): it gets the Lugers as the
+       unskipped scene gives them, and the partner, who never sees this scene, finds them in the room as after the
+       unskipped one (coop_item_granted). */
+    if (coop_on && pc_inv_add(&sys->itm[sys->ply_id * 16], (sys->gm_flg & 0x8000000) ? 10 : 8, (unsigned int)v1 << 16, itemdata))
+    {
+        coop_item_granted(v1);
+    }
+#endif
     return 1;
 }
 
