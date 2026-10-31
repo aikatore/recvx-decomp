@@ -140,6 +140,7 @@ void bhMainSequence()
             }
 #ifdef TARGET_PC
             trade_draw();   /* co-op trade screen / request line (pc/glue/trade_glue.c) */
+            wpn_draw();     /* the weapon shortcut wheel (pc/glue/weapon_glue.c) */
 #endif
         }
         

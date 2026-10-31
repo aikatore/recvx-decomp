@@ -939,7 +939,16 @@ void bhSysCallItemselect()
     
     if (!(sys->ts_flg & 0x200)) 
     {
+#ifdef TARGET_PC
+        if (!pc_wpn_screen())   /* the weapon shortcuts' screen is up: the inventory waits under it, undrawn */
+        {
+            StatusMain();
+        }
+        
+        wpn_menu_draw();   /* the weapon shortcuts' screen and the inventory's marks (pc/glue/weapon_glue.c) */
+#else
         StatusMain();
+#endif
     } 
     else 
     {

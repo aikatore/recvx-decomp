@@ -299,6 +299,7 @@ void bhSetPad()
     pad = knife_pad(pad);
     pad = menu_pad(pad);
     pad = trade_pad(pad);   /* co-op trade screen: its input, the player stands still */
+    pad = wpn_pad(pad);     /* weapon shortcuts: keys, the d-pad wheel, their screen (weapon_glue.c) */
 #endif
     
     sys->pad_ps = pad & ~sys->pad_oncpy; 
