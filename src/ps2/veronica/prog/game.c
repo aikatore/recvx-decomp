@@ -17,6 +17,7 @@
 #include "../../../ps2/veronica/prog/main.h"
 #ifdef TARGET_PC
 extern int pose_trace_mark;
+void placer_draw(void);   /* --dev object placer (pc/glue/placer_glue.c) */
 #endif
 
 // 100% matching! 
@@ -385,6 +386,9 @@ void bhAllDrawModel()
         bhDrawEffect();
     }
     bhDrawObjItm();
+#ifdef TARGET_PC
+    placer_draw();   /* --dev: the placed models of this room, drawn only */
+#endif
     njControl3D(0x100);
     njCnkSetEasyMultiAmbient(rom->amb_r[rom->amb_chr], rom->amb_g[rom->amb_chr], rom->amb_b[rom->amb_chr]);
     njCnkSetSimpleMultiAmbient(rom->amb_r[rom->amb_chr], rom->amb_g[rom->amb_chr], rom->amb_b[rom->amb_chr]);
