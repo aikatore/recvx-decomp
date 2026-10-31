@@ -404,6 +404,8 @@ void bhControlEvent()
 #ifdef TARGET_PC
     pc_unlock_scd1(0);   /* F2 cheat "Unlock all": a key's use spot sees the key used, as from the item screen (pc/glue/cheat_glue.c) */
     
+    pc_extras_scd1();    /* "Extra Item Boxes and Herbs": the lids, the planters' use (pc/glue/extras_glue.c) */
+    
     if (coop_on)
     {
         pc_detector_scd1(); /* co-op rule "Metal detector: Skipped": the empty security boxes of 0/9 rest (pc/glue/detector_glue.c) */
