@@ -322,7 +322,11 @@ void FileExit01()
             }
         } 
     }
+#ifdef TARGET_PC   /* co-op shares the "read" bit: a partner's read set it, our manual stayed (pc/glue/coop_glue.c) */
+    else if ((fv->filenum == 0) && ((!(sys->ic_flg[15] & 0x80000000)) || pc_manual_in_bag()))
+#else
     else if ((fv->filenum == 0) && (!(sys->ic_flg[15] & 0x80000000))) 
+#endif
     {
         itm = sys->itm;
         
