@@ -992,6 +992,9 @@ unsigned int bhCamSet()
 {
 	unsigned int v0, v1, v2;
 
+#ifdef TARGET_PC
+    pc_dev_event_op(0);   /* --dev cutscene log: the running task's event sets the camera (pc/glue/devcine_glue.c) */
+#endif
     cam.flg &= ~0x46;
     
     bhScePtr++;
@@ -1479,6 +1482,9 @@ unsigned int bhMovieStart()
     sys->mvi_no = v0;
     
     sys->cb_flg |= 0x4000000;
+#ifdef TARGET_PC
+    pc_dev_event_op(1);   /* --dev cutscene log: the running task's event starts the movie (pc/glue/devcine_glue.c) */
+#endif
     
     return 1;
 }
@@ -1701,6 +1707,9 @@ unsigned int bhCineSet()
 {
     unsigned int v0;
   
+#ifdef TARGET_PC
+    pc_dev_event_op(0);   /* --dev cutscene log: the running task's event sets the cinema mode (pc/glue/devcine_glue.c) */
+#endif
     bhScePtr++;
     
     v0 = *bhScePtr;
@@ -13084,6 +13093,9 @@ unsigned int bhLoadWork2()
 // 100% matching!
 int Event_init(BH_SCEWORK* a0, unsigned int evt_id) 
 {
+#ifdef TARGET_PC
+    pc_dev_event_start((int)(a0 - bhEtask), evt_id);   /* --dev cutscene log: the event this task level runs (pc/glue/devcine_glue.c) */
+#endif
     a0->status = 1;
     
     *(short*)&a0->mode0 = 0;
