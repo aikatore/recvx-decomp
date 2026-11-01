@@ -1033,7 +1033,10 @@ void bhDrawEnemy()
                     }
                     
 #ifdef TARGET_PC
-                    if ((ep->mdflg & 0x2) && pc_variant_n && pc_variant_draw(ep))   /* an enemy variant's model (a zombie chewing: no morph) */
+                    if ((ep->mdflg & 0x2) && cast_n && cast_draw(ep))   /* the cutscene cast's model in place of a morphing record (Nosferatu, 6040) */
+                    {
+                    }
+                    else if ((ep->mdflg & 0x2) && pc_variant_n && pc_variant_draw(ep))   /* an enemy variant's model (a zombie chewing: no morph) */
                     {
                     }
                     else
