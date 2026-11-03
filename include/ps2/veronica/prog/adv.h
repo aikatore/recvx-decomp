@@ -72,8 +72,8 @@ typedef struct ADV_WORK
     char CursorFlag[4][4];            // offset 0xC2, size 0x10
     char ModeCommandId[4];            // offset 0xD2, size 0x4
 #else
-    char CursorFlag[4][5];            /* PC: a fifth title menu row, MULTIPLAYER (pc/glue/lobby_glue.c) */
-    char ModeCommandId[5];
+    char CursorFlag[4][6];            /* PC: up to six title menu rows, with EXTRA, MULTIPLAYER and EXIT (pc/glue/lobby_glue.c) */
+    char ModeCommandId[6];
 #endif
 } ADV_WORK;
 
