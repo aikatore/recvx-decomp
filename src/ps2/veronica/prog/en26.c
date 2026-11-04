@@ -891,6 +891,17 @@ void bhEne26_DmgCheckType00(BH_PWORK* epw, EN26_WPNDAMAGE_WORK* wp_tbl)
         act = wp->cb_act;
     }
     
+#ifdef TARGET_PC
+    /* PC: the rows of weapons 0 and 1 (no weapon, the lighter; the knife is 2) have no death or combo action. In the
+       game they never hit, but a hit with one (a test aid) put the enemy into damage mode with its move's mode2:
+       DG00/DG01 froze it, DG02 sent it back to its moves undying, 5..7 are NULL (a crash), 16 is past the table.
+       It falls as from a gun or staggers instead. */
+    if (act == 0 && epw->mode0 == 3)
+    {
+        act = (epw->hp < 0) ? 3 : 2;
+    }
+#endif
+
     if (act == 0)
     {
         if (!(EXP0_I(0x40) & 0x8000000))

@@ -3591,6 +3591,15 @@ void bhEne01_DmgCheckType00(BH_PWORK* epw)
             return;
         }
         act = wp_tbl->cb_act;
+#ifdef TARGET_PC
+        /* PC: the rows of weapons 0 and 1 (no weapon, the lighter; the knife is 2) have no combo action, which kills.
+           In the game they never hit, but a hit with one (a test aid) left damage mode with the move's mode2 (after
+           MV12 the NULL DG12, a crash; others undying). It falls as from a gun instead (en26.c likewise). */
+        if (act == 0)
+        {
+            act = 3;
+        }
+#endif
     }
 
     if ((wp_tbl->flg & 0x40) && !(plp->flg & 4) && (epw->mode0 != 2) && !(EXP0_I(0x40) & 0x440000))
