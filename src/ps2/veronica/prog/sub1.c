@@ -7861,7 +7861,12 @@ void ItemBoxChange(S_WORK* st, unsigned short ibcsr)
  
 	if (sys->ply_id == 0) 
     {
+#ifdef TARGET_PC
+        /* BioRand places key items anywhere: in a BioRand game Claire may still need them here (pc/glue/biorand_glue.c) */
+        if (((itemdata[id2].type & 0x40)) && ((sys->stg_no == 9) && (sys->rom_no == 26)) && !pc_biorand_box_any()) 
+#else
         if (((itemdata[id2].type & 0x40)) && ((sys->stg_no == 9) && (sys->rom_no == 26))) 
+#endif
         {
             swork.statusflg &= ~0x100000;
             
