@@ -1802,7 +1802,11 @@ void bhSysCallMonitor()
                     }
                 }
 
-                if (((vibflg == 0) || (--VibWait == 0)) && (GetReadFileStatus() == 0)) 
+#ifdef TARGET_PC
+                if (((vibflg == 0) || (--VibWait == 0)) && (GetReadFileStatus() == 0) && (pc_test_read_hold() == 0))
+#else
+                if (((vibflg == 0) || (--VibWait == 0)) && (GetReadFileStatus() == 0))
+#endif
                 {
                     FlushCache(0);
                     
