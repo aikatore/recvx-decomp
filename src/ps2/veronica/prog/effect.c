@@ -1773,17 +1773,24 @@ label:
 void bhDrawNtxEffect2D(unsigned int* owp, int ct)
 {
     O_WRK* op;
-    
-    while (ct--) 
+
+#ifdef TARGET_PC
+    /* full-screen tints (the B.O.W. gas round's green, bhEff130): a screen effect layer, as wide as "Screen Effects" sets */
+    if (!pc_overlay_begin(PC_OVL_EFFECT)) return;
+#endif
+    while (ct--)
     {
         op = (O_WRK*)*owp++;
-        
-        if (((!(op->flg & 0x1000000)) && (!(op->stflg & 0x1000000))) && ((!(sys->gm_flg & 0x4000)) || (!(op->mdflg & 0x40)))) 
+
+        if (((!(op->flg & 0x1000000)) && (!(op->stflg & 0x1000000))) && ((!(sys->gm_flg & 0x4000)) || (!(op->mdflg & 0x40))))
         {
             njDrawPolygon(op->pvp, op->pn, 1);
-        } 
+        }
     }
-} 
+#ifdef TARGET_PC
+    pc_overlay_end();
+#endif
+}
 
 // 100% matching!
 void bhDrawTrsEffect2D(unsigned int* owp, int ct)
