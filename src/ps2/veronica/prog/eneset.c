@@ -205,6 +205,7 @@ void pc_enemy_mark_added(void)
 
 void pc_enemy_watch(BH_PWORK* ep, int slot, int ran);   /* coop_glue.c */
 void pc_enemy_unhold(BH_PWORK* ep);
+int pc_hit_react(BH_PWORK* ep, int on);     /* tps_glue.c */
 void host_log(const char* fmt, ...);
 
 /* co-op (coop_glue.c grab_in): the host's zombie hands its grab to our game, which puts our player in
@@ -980,6 +981,9 @@ void bhDrawEnemy()
     BH_PWORK* ep;
     int i;
     unsigned int argb;
+#ifdef TARGET_PC
+    int pc_react;
+#endif
     
     ep = ene;
     
@@ -998,6 +1002,9 @@ void bhDrawEnemy()
             {
                 bhCalcModel(ep);
             }
+#ifdef TARGET_PC
+            pc_react = pc_hit_react(ep, 1);   /* third person: a zombie flinches where it was hit, for the draw only (tps_glue.c) */
+#endif
             
             if ((((ep->mdflg & 0x20)) || (bhCheckClipModel(ep) == 0)) && (!(ep->mdflg & 0x1)) && (ep->mlwP->objP != NULL)) 
             {
@@ -1062,6 +1069,12 @@ void bhDrawEnemy()
                     }
                 }
             }
+#ifdef TARGET_PC
+            if (pc_react)
+            {
+                pc_hit_react(ep, 0);
+            }
+#endif
         }
     }
 }
