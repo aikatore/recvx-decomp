@@ -1563,9 +1563,19 @@ unsigned int bhVoiceOn()
     }
     
     bhCetask->mode2 = 1;
-    
+
+#ifdef TARGET_PC
+    {   /* "Randomize Voice Lines" (pc/glue/cast_glue.c): another character's line, maybe from the other disc's archive */
+        int pt = PatId[1];
+
+        v1 = pc_voice_on(v1, v0, v4, bhScePtr, &pt);
+
+        PlayVoiceEx2(pt, v1, &pPos, v2, v3, 0);
+    }
+#else
     PlayVoice(v1, &pPos, v2, v3);
-    
+#endif
+
     return 1;
 }
 
@@ -3483,9 +3493,12 @@ unsigned int bhLipSet()
     pp = &ene[enep->wrk_no];
     
     ((int*)pp->exp0)[4] = v0;
-    
+
     bhSetLip(pp, v2);
-    
+#ifdef TARGET_PC
+    pc_voice_lip(pp, v1);   /* "Randomize Voice Lines": the inserted line's mouth movements (pc/glue/cast_glue.c) */
+#endif
+
     return 1;
 }
 

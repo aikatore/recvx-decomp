@@ -2276,6 +2276,9 @@ void ContinuePlayVoice()
 // 100% matching!
 void StopVoice(int FadeOutRate)
 {
+#ifdef TARGET_PC
+    pc_voice_stop();   /* "Randomize Voice Lines" (pc/glue/cast_glue.c) */
+#endif
     if (FadeOutRate != 0) 
     {
         RequestAdxFadeFunction(1, 2, FadeOutRate);
@@ -2288,6 +2291,12 @@ void StopVoice(int FadeOutRate)
 // 100% matching!
 int CheckPlayEndAdx(int SlotNo)
 {
+#ifdef TARGET_PC
+    if (SlotNo == 1)
+    {
+        return pc_voice_playing(AdxPlayFlag[1]);   /* "Randomize Voice Lines": the script waits as long as for its own line (pc/glue/cast_glue.c) */
+    }
+#endif
     return AdxPlayFlag[SlotNo];
 }
 
