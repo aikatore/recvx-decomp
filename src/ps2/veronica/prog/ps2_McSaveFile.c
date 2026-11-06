@@ -461,6 +461,9 @@ void mcGetPortSelectDirInfo(SAVEFILE* pSaveFile, SELECTFILEWINDOW* pWin, unsigne
     
     pFileInfo->saveroom = RoomNameSwitch(pSaveFile->rom_no + (pSaveFile->stg_no * 100));
     
+#ifdef TARGET_PC   /* a placed typewriter's location text in the save (pc/glue/save_glue.c) */
+    pc_save_row_note(pWin, ulCheckCounter, pSaveFile);
+#endif
     pFileInfo->gm_mode = pSaveFile->gm_mode;
     
     pFileInfo->save_ct = pSaveFile->save_ct;
@@ -656,11 +659,26 @@ void mcDisplaySelectFileInfoMesCount(SELECTFILEINFO* pFileInfo, float fx, float 
     unsigned int ulMesPlace; 
     unsigned int ulMaxMes; 
 
+#ifdef TARGET_PC   /* a placed typewriter's location text, a room without a save-menu name (pc/glue/save_glue.c): typed in as a name */
+    if (pc_save_text_len(pFileInfo) >= 0)
+    {
+        ulMaxMes = 15 + pc_save_text_len(pFileInfo);
+
+        ulMesPlace = -1;
+
+        ulMesIncrease = -1;
+    }
+    else
+    {
+#endif
     ulMaxMes = Type_Space[pFileInfo->saveroom - 1][0];
     
     ulMesPlace = Type_Space[pFileInfo->saveroom - 1][1];
     
     ulMesIncrease = Type_Space[pFileInfo->saveroom - 1][2];
+#ifdef TARGET_PC
+    }
+#endif
 
     mcDispFileNumber(pFileInfo, fx, fy);
 
@@ -722,11 +740,17 @@ void mcDisplaySelectFileInfoMesCount(SELECTFILEINFO* pFileInfo, float fx, float 
         } 
         else 
         {
+#ifdef TARGET_PC
+            if (pc_save_text_draw(pFileInfo, fy, col, CountMes - (14 - pFileInfo->ply_id)) == 0)
+#endif
             bhDispMessageEx(352.0f, fy, -1.0f, 1, pFileInfo->saveroom + 215, col, CountMes - (14 - pFileInfo->ply_id));
         }
     } 
     else if (CountMes >= (ulMaxMes - pFileInfo->ply_id)) 
     {
+#ifdef TARGET_PC
+        if (pc_save_text_draw(pFileInfo, fy, col, 0) == 0)
+#endif
         bhDispMessageEx(352.0f, fy, -1.0f, 1, pFileInfo->saveroom + 215, col, 0);
     }
 }
@@ -877,6 +901,13 @@ void mcDispFileName(SELECTFILEINFO* pFileInfo, float fy)
     
     CountDisplay(15, &pos, col, 1);
     
+#ifdef TARGET_PC   /* a placed typewriter's location text (pc/glue/save_glue.c) */
+    if (pc_save_text_draw(pFileInfo, fy, col, 0) != 0)
+    {
+        return;
+    }
+
+#endif
     bhDispMessageEx(352.0f, fy, -1.0f, 1, pFileInfo->saveroom + 215, col, 0);
 }
 
@@ -889,6 +920,13 @@ void mcSetTyepWriteMode(SELECTFILEWINDOW* pWin, unsigned int SetState)
 // 100% matching!
 int mcSetStringSaveFile(SELECTFILEINFO* pFileInfo)
 {
+#ifdef TARGET_PC   /* a placed typewriter's location text, a room without a save-menu name (pc/glue/save_glue.c) */
+    if (pc_save_text_len(pFileInfo) >= 0)
+    {
+        return 15 + pc_save_text_len(pFileInfo) - pFileInfo->ply_id;
+    }
+
+#endif
     return Type_Space[pFileInfo->saveroom - 1][0] - pFileInfo->ply_id;
 }
 
