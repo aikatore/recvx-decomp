@@ -3199,6 +3199,30 @@ void bhEne01_CalcEnemy(BH_PWORK* epw)
     }
 }
 
+#ifdef TARGET_PC
+/* third person, "Headshots & Piercing" (tps_glue.c pc_head_burst): a killing head hit bursts the zombie's head where the
+   game's rule (bhEne01_DmgCheckType00: a weapon with flag 0x10, a walking zombie) did not, as that rule does it; hp: before
+   the hit (a hit on the dying zombie bursts nothing) */
+static void pc_burst_head(BH_PWORK* epw, int hp)
+{
+    BH_PWORK* cepw = (BH_PWORK*)epw->exp1;
+
+    if ((hp < 0) || (EXP0_I(0x78) == -1) || (EXP0_I(0x40) & 0x80440000) || (epw->mdlver == 31) || (epw->mdlver == 42) || !pc_head_burst(epw))
+    {
+        return;
+    }
+
+    epw->hp = -1;
+    if (cepw != NULL)
+    {
+        cepw->hp = epw->hp;
+    }
+    bhEne01_ExpHeadEffect2(epw, 0);
+    EXP0_I(0x78) = -1;
+    bhEne01_SePlay(epw, (NJS_VECTOR*)&epw->px, 4869);
+}
+#endif
+
 // 100% matching!
 void bhEne01_DmgCheck(BH_PWORK* epw)
 {
@@ -3243,6 +3267,9 @@ void bhEne01_DmgCheck(BH_PWORK* epw)
             {
                 if (epw->mode0 >= 3)
                 {
+#ifdef TARGET_PC
+                    pc_burst_head(epw, now_hp);
+#endif
                     bhEne01_SetBlood(epw, now_hp);
                     return;
                 }
@@ -3251,6 +3278,9 @@ void bhEne01_DmgCheck(BH_PWORK* epw)
                      (epw->mode0 == 3 && epw->mode2 >= 3) ||
                      ((EXP0_I(0x40) & 0x40000) && epw->mode0 == 1 && epw->mode3 == 0))
             {
+#ifdef TARGET_PC
+                pc_burst_head(epw, now_hp);
+#endif
                 bhEne01_SetBlood(epw, now_hp);
                 return;
             }
@@ -3315,6 +3345,9 @@ void bhEne01_DmgCheck(BH_PWORK* epw)
             }
 
             bhEne01_DmgCheckType[epw->type](epw);
+#ifdef TARGET_PC
+            pc_burst_head(epw, now_hp);
+#endif
 
             if (cepw != NULL)
             {
@@ -3346,6 +3379,10 @@ void bhEne01_SetBlood(BH_PWORK* epw, int hp)
     BH_PWORK* epp;
     NJS_POINT3 ofp;
 	int obj_no;
+#ifdef TARGET_PC
+    NJS_POINT3 pc_ofs;
+    int pc_j;
+#endif
 
     wp_tbl = En01_WpnDamageTbl;
     wp_tbl += epw->wpnr_no;
@@ -3357,6 +3394,10 @@ void bhEne01_SetBlood(BH_PWORK* epw, int hp)
     {
         epp = epw;
     }
+#ifdef TARGET_PC   /* third person, a precise hit (tps_glue.c pc_blood_at_hit): the blood bursts where the shot hit, on the
+                      joint it hit (the game: on the chest, or the hips for a leg) */
+    pc_j = epp == epw ? pc_blood_at_hit(epw, &pc_ofs.x) : -1;
+#endif
     
     if (!(wp_tbl->flg & 0x4000))
     {
@@ -3386,6 +3427,13 @@ void bhEne01_SetBlood(BH_PWORK* epw, int hp)
                     ofp.y = 2.5f;
                     obj_no = 9;
                 }
+#ifdef TARGET_PC
+                if (pc_j >= 0)
+                {
+                    ofp = pc_ofs;
+                    obj_no = pc_j;
+                }
+#endif
 
                 if (wp_tbl->cb_blood == 9)
                 {
@@ -3426,6 +3474,13 @@ void bhEne01_SetBlood(BH_PWORK* epw, int hp)
                     ofp.y = 2.5f;
                     obj_no = 9;
                 }
+#ifdef TARGET_PC
+                if (pc_j >= 0)
+                {
+                    ofp = pc_ofs;
+                    obj_no = pc_j;
+                }
+#endif
                 
                 if (epw->comb_flg & 0x40)
                 {
@@ -3448,6 +3503,14 @@ void bhEne01_SetBlood(BH_PWORK* epw, int hp)
         ofp.x = owk->mtx[12];
         ofp.y = owk->mtx[13];
         ofp.z = owk->mtx[14];
+#ifdef TARGET_PC
+        if (pc_j >= 0)   /* the chunks from the hit (the game: the joint the blood table named, the chest for the head) */
+        {
+            ofp.x = epw->dpx;
+            ofp.y = epw->dpy;
+            ofp.z = epw->dpz;
+        }
+#endif
         bhEne_SetNikuhenEffect2(epp, 0, &ofp, 4, bhEne01_ChgTextID(epp, 5));
     }
 }

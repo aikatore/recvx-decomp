@@ -422,6 +422,10 @@ void bhEne_SetBlood(BH_PWORK* epw, unsigned char type, BT_WORK* bt)
     NJS_POINT3 ps; 
     int fhit;
     BT_WORK* btp; // not from DWARF
+#ifdef TARGET_PC
+    NJS_POINT3 pc_ofs;
+    int pc_j;
+#endif
 
     fhit = 0;
     
@@ -440,6 +444,10 @@ void bhEne_SetBlood(BH_PWORK* epw, unsigned char type, BT_WORK* bt)
     } 
     else 
     {
+#ifdef TARGET_PC   /* third person, a precise hit (tps_glue.c pc_blood_at_hit): the blood where the shot hit, on the joint it
+                      hit, as the game places the sniper rifle's (the table: a spot on that part, a zombie's head on its chest) */
+        pc_j = pc_blood_at_hit(epw, &pc_ofs.x);
+#endif
         if (bhDGCdirCheck2((NJS_VECTOR*)&epw->dvx, owk) == 0)
         {
             fhit = 1;
@@ -460,6 +468,15 @@ void bhEne_SetBlood(BH_PWORK* epw, unsigned char type, BT_WORK* bt)
         }
         
         epw->djnt_no = btp->lnk_obj;
+#ifdef TARGET_PC
+        if (pc_j >= 0)   /* (the table's random draws above stay, and djnt_no as the game leaves it) */
+        {
+            epw->djnt_no = pc_j;
+            bhEne_SetBlood2(epw, type, &pc_ofs, plp->way);
+            epw->djnt_no = btp->lnk_obj;
+            return;
+        }
+#endif
     }
     
     bhEne_SetBlood2(epw, type, &ofp, plp->way);

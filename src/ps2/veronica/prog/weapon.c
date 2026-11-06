@@ -511,7 +511,7 @@ int bhCheckGunAtari(GA_WORK* gap)
     float px, py, pz; // not from DWARF 
     static int igct;     
 #ifdef TARGET_PC
-    int prec, d0;
+    int prec, d0, pierce;
 #endif
     
     wno = gap->wpn_no;
@@ -526,6 +526,13 @@ int bhCheckGunAtari(GA_WORK* gap)
 #ifdef TARGET_PC   /* third person, "Precise hits": the player's hitscan shot (not a projectile: arrows, launchers) hits only
                       the enemies' bodies (tps_glue.c pc_precise_hit); 0: the game's test */
     prec = (wp_flg & 0x30000000) == 0x10000000 && pc_precise_hits();
+    /* third person, "Headshots & Piercing": the player's shot goes through the enemies as the magnum's (WpnTab flg
+       0x80000000: each enemy along it up to the wall is hit; tps_glue.c pc_pierce: the sniper rifle) */
+    pierce = !(wp_flg & 0x80000000) && pc_pierce(gap->wpn_no);
+    if (pierce)
+    {
+        wp_flg |= 0x80000000;
+    }
 #endif
     
     if (((gap->at_flg & 0x4)) && ((wp_flg & 0x5000))) 
@@ -752,8 +759,8 @@ label_2:
                                     
                                     pp->wpnr_no = gap->wpn_no;
                                     
-#ifdef TARGET_PC   /* precise: this enemy's own hit point, joint and range (the game: the nearest enemy's) */
-                                    if (prec)
+#ifdef TARGET_PC   /* precise, or pierced by our rule: this enemy's own hit point, joint and range (the game: the nearest enemy's) */
+                                    if (prec || pierce)
                                     {
                                         px = ps.x;
                                         py = ps.y;
@@ -762,6 +769,13 @@ label_2:
                                         jno = kno;
 
                                         nr = ll;
+                                    }
+
+                                    if (pierce)   /* (the game's piercing keeps the point stored above) */
+                                    {
+                                        pp->dpx = px;
+                                        pp->dpy = py;
+                                        pp->dpz = pz;
                                     }
 
                                     if (!(wp_flg & 0x8) && !prec)
