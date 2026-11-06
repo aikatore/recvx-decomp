@@ -1570,7 +1570,10 @@ unsigned int bhVoiceOn()
 
         v1 = pc_voice_on(v1, v0, v4, bhScePtr, &pt);
 
-        PlayVoiceEx2(pt, v1, &pPos, v2, v3, 0);
+        if ((int)v1 >= 0)   /* (-1: the speaker shown as an enemy makes its sounds instead) */
+        {
+            PlayVoiceEx2(pt, v1, &pPos, v2, v3, 0);
+        }
     }
 #else
     PlayVoice(v1, &pPos, v2, v3);
