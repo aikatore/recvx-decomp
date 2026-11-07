@@ -3176,6 +3176,19 @@ unsigned int bhWeaponSeCall()
 		enep = &rom->enep[v7];
 		e_ep = &ene[enep->wrk_no];
 
+#ifdef TARGET_PC
+		{   /* the shot's weapon v3 sounds when the scene's arms bank was loaded for it: a room that sets no weapon (BioRand's
+			   RM_0030 has no ArmsItemChange), else the player's weapon's as retail (pc/glue/biorand_glue.c) */
+			int se = pc_cast_shot_se(v3);
+
+			if (se != 0)
+			{
+				CallPlayerWeaponSeEx((NJS_POINT3*)&e_ep->mlwP->owP[v1].mtx[12], se, v8);
+			}
+
+			bhSetGunFire(e_ep, v3, v1, v2, v6);
+		}
+#else
 		if (v2 == 0) 
 		{
 			if (WpnTab[plp->wpnr_no].seno0 != 0) 
@@ -3194,6 +3207,7 @@ unsigned int bhWeaponSeCall()
 			
 			bhSetGunFire(e_ep, v3, v1, v2, v6);
 		}
+#endif
 
 		break;
 	case 2:
@@ -13118,6 +13132,9 @@ int Event_init(BH_SCEWORK* a0, unsigned int evt_id)
     
     a0->data = (unsigned char*)rom->evtp;
     a0->data = (unsigned char*)a0->data + ((int*)rom->evtp)[evt_id + ((sizeof(EVT_WORK) / 4) - 1)];
+#ifdef TARGET_PC
+    pc_cast_shot_event((int)(a0 - bhEtask), a0->data);   /* a cast shot whose weapon the room sets nowhere: its arms bank (pc/glue/biorand_glue.c) */
+#endif
     
     a0->loop = -1;
     
