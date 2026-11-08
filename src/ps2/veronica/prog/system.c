@@ -692,7 +692,11 @@ void bhSysCallEvent()
         return;
     }
     
+#ifdef TARGET_PC   /* F8 (--dev): the spoiler log's screen is a pause of its own (pc/glue/spoiler_menu.c) */
+    if (((sys->tk_flg & 0x80)) && ((!(sys->ts_flg & 0x80)) && ((sys->ts_flg & 0x3DE00) == 0x3DE00)) && (!(sys->tk_flg & 0x40000)) && (!(sys->cb_flg & 0x7)) && (!(sys->st_flg & 0x1C040208)) && ((!(sys->ss_flg & 0x20000000)) && (!(sys->ss_flg & 0x80400000))) && ((Pause_Flag != 0) || pc_spoiler_want() || (((sys->pad_on & 0x80)) && ((sys->pad_ps & 0x20000)) && (PauseBtn == 0))))
+#else
     if (((sys->tk_flg & 0x80)) && ((!(sys->ts_flg & 0x80)) && ((sys->ts_flg & 0x3DE00) == 0x3DE00)) && (!(sys->tk_flg & 0x40000)) && (!(sys->cb_flg & 0x7)) && (!(sys->st_flg & 0x1C040208)) && ((!(sys->ss_flg & 0x20000000)) && (!(sys->ss_flg & 0x80400000))) && ((Pause_Flag != 0) || (((sys->pad_on & 0x80)) && ((sys->pad_ps & 0x20000)) && (PauseBtn == 0))))
+#endif
     {
         sys->ss_flg |= 0x80000000;
         
@@ -721,7 +725,11 @@ void bhSysCallEvent()
         
         pdGetPeripheral(0);
         
+#ifdef TARGET_PC   /* the spoiler log's pause ends as it closes, not on START */
+        if (pc_spoiler_up() ? pc_spoiler_done() : ((pd_port != -1) && ((Ps2_pad.pad1.push & 0x800))))
+#else
         if ((pd_port != -1) && ((Ps2_pad.pad1.push & 0x800))) 
+#endif
         {
             sys->ss_flg &= ~0x80000000;
             
@@ -2538,6 +2546,14 @@ void bhSysCallScreenSaver()
         
         break;
     case 10:
+#ifdef TARGET_PC
+        if (pc_spoiler_frame())   /* the spoiler log is this pause's screen, not PAUSE */
+        {
+            sys->ssv_an = 0;
+
+            break;
+        }
+#endif
         sys->ssv_an = 64.0f;
         
 #ifdef TARGET_PC
