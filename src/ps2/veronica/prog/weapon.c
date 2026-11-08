@@ -477,8 +477,21 @@ int bhCountBullet()
     return 1;
 }
 
+#ifdef TARGET_PC
+/* third person, "Locational Hit Reactions": while the effects step, a flinching zombie's nodes are turned for the
+   effects linked to it to follow (effect.c bhControlEffect, tps_glue.c pc_hit_react_fx). The hit tests an effect makes
+   (bolts, grenades, blasts) take the turns off and put them back, so their hits, joints and damage are the game's */
+#define PC_UNFLINCHED(call) { int pc_fx = pc_hit_react_fx(0); call; if (pc_fx) pc_hit_react_fx(1); }
+static int pc_CheckGunAtari(GA_WORK* gap);
+int bhCheckGunAtari(GA_WORK* gap) { int r; PC_UNFLINCHED(r = pc_CheckGunAtari(gap)) return r; }
+#endif
+
 // 98.84% matching (matches on NGC)
+#ifdef TARGET_PC
+static int pc_CheckGunAtari(GA_WORK* gap)
+#else
 int bhCheckGunAtari(GA_WORK* gap)
+#endif
 {
     NJS_CAPSULE gatr;    
     NJS_CAPSULE wal;    
@@ -1214,8 +1227,17 @@ void bhCheckKnifeAtari(GA_WORK* gap)
     }
 }
 
+#ifdef TARGET_PC
+static int pc_CheckFlyAtari(GA_WORK* gap, int eidx);
+int bhCheckFlyAtari(GA_WORK* gap, int eidx) { int r; PC_UNFLINCHED(r = pc_CheckFlyAtari(gap, eidx)) return r; }
+#endif
+
 // 100% matching1
+#ifdef TARGET_PC
+static int pc_CheckFlyAtari(GA_WORK* gap, int eidx)
+#else
 int bhCheckFlyAtari(GA_WORK* gap, int eidx)
+#endif
 {
     NJS_CAPSULE wal; 
     NJS_SPHERE spr;  
@@ -1324,8 +1346,17 @@ int bhCheckFlyAtari(GA_WORK* gap, int eidx)
     return id;
 }
 
+#ifdef TARGET_PC
+static void pc_SetBowDamage();
+void bhSetBowDamage() PC_UNFLINCHED(pc_SetBowDamage())
+#endif
+
 // 99.09% matching (matches on NGC)
+#ifdef TARGET_PC
+static void pc_SetBowDamage()
+#else
 void bhSetBowDamage()
+#endif
 {
     NJS_VECTOR sca; 
     float knr;     
@@ -1387,8 +1418,17 @@ void bhSetBowDamage()
     }
 }
 
+#ifdef TARGET_PC
+static void pc_CheckBombAtari(NJS_POINT3* pos, float ar, int dmax, int dmin);
+void bhCheckBombAtari(NJS_POINT3* pos, float ar, int dmax, int dmin) PC_UNFLINCHED(pc_CheckBombAtari(pos, ar, dmax, dmin))
+#endif
+
 // 100% matching!
+#ifdef TARGET_PC
+static void pc_CheckBombAtari(NJS_POINT3* pos, float ar, int dmax, int dmin)
+#else
 void bhCheckBombAtari(NJS_POINT3* pos, float ar, int dmax, int dmin)
+#endif
 {
     NJS_CAPSULE wal; 
     NJS_SPHERE spr;
