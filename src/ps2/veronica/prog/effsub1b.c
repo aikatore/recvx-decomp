@@ -704,13 +704,22 @@ void bhEff135(O_WRK* op)
     }
 }
 
+#ifdef TARGET_PC
+void pc_trail_grab(O_WRK* op);
+int pc_trail_draw(O_WRK* op);
+#endif
+
 // 100% matching!
 void bhDraw136(O_WRK* op)
 {
     int* vp;
     BH_PWORK* pwp;
 
+#ifdef TARGET_PC
+    if (op->flg != 0 && !pc_trail_draw(op))   /* (that model drawn at the pose kept, or nothing: trail_glue.c) */
+#else
     if (op->flg != 0) 
+#endif
     {
         njPushMatrixEx();
         
@@ -799,6 +808,9 @@ void bhEff136(O_WRK* op)
         {
             npCopyVlist((int*)op->exp0, mlwP->objP[op->lkono].model->vlist);
         }
+#ifdef TARGET_PC
+        pc_trail_grab(op);   /* a work drawn as another model: that model's pose kept too (pc/glue/trail_glue.c) */
+#endif
         
         op->func = (void*)bhDraw136;
         
