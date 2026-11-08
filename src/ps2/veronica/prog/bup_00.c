@@ -356,7 +356,11 @@ void TypewriterInit()
     
     if (InitFlag == 0) 
     {
+#ifdef TARGET_PC
+        if ((!(sys->ss_flg & 0x200)) && (pc_cheat_load() == 0))   /* the F2 Load Game: the load screen in the game (pc/glue/cheat_glue.c) */
+#else
         if (!(sys->ss_flg & 0x200)) 
+#endif
         {
             pSave = CreateSaveScreen(&Save, vwbmemp);
             
@@ -390,7 +394,11 @@ void TypewriterInit()
 // 100% matching!
 void TypewriterMain()
 {
+#ifdef TARGET_PC
+     if ((!(sys->ss_flg & 0x200)) && (pc_cheat_load() == 0))
+#else
      if (!(sys->ss_flg & 0x200))
+#endif
      {
         ExecuteSaveScreen(pSave);
          
@@ -410,6 +418,13 @@ void TypewriterMain()
          
         if (pLoad->usExitFlag == 1) 
         {
+#ifdef TARGET_PC
+            if (pc_cheat_load_exit() != 0)   /* the F2 Load Game: the save's game starts, or back to the game as the save screen leaves */
+            {
+                InitFlag = 0;
+                return;
+            }
+#endif
             sys->typ_md0 = 2;
             sys->typ_md1 = 0;
             
