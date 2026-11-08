@@ -1356,6 +1356,12 @@ unsigned int bhArmsItemChange()
     
     bhScePtr++;
     
+#ifdef TARGET_PC
+    if (pc_biorand_arms_skip(v0))   /* with BioRand a weapon the bag does not hold stays out of the hand (RM_6060's sniper rifle; pc/glue/biorand_glue.c) */
+    {
+        return 1;
+    }
+#endif
     plp->wpnr_no = v0;
     
     sys->ply_wno[sys->ply_id] = v0;
