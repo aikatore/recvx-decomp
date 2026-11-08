@@ -642,6 +642,9 @@ int bhDispMessage(float px, float py, float pri, int mes_typ, int mes_idx, int c
         break;
     }
     
+#ifdef TARGET_PC
+    px = pc_mes_fit_x(px, dp);   /* the memory card screens: a longer translation's inside the screen (pc/glue/save_glue.c) */
+#endif
     pos.x = px;
     pos.y = py;
     

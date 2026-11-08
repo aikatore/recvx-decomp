@@ -736,7 +736,11 @@ void mcDisplaySelectFileInfoMesCount(SELECTFILEINFO* pFileInfo, float fx, float 
     {
         if (CountMes >= ulMesPlace) 
         {
+#ifdef TARGET_PC
+            pc_save_text_draw(pFileInfo, fy, col, (CountMes + ulMesIncrease) - 14);   /* the room's name, narrower when longer than the window (pc/glue/save_glue.c) */
+#else
             bhDispMessageEx(352.0f, fy, -1.0f, 1, pFileInfo->saveroom + 215, col, (CountMes + ulMesIncrease) - 14);
+#endif
         } 
         else 
         {

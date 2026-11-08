@@ -51,6 +51,9 @@ LOAD_SCREEN* CreateLoadScreen(LOAD_SCREEN* pLoad, void* vpWorkPtrSys) // second 
 void DispLoadMessageSelect(char cSelectMes)
 {
     bhFontScaleSet(0.71f, 0.71f, 0.75f);
+#ifdef TARGET_PC
+    pc_mes_keep_in(610.0f);   /* a longer translation's line moved left to end inside the screen (pc/glue/save_glue.c) */
+#endif
 
     switch (cSelectMes) 
     {
@@ -98,6 +101,9 @@ void DispLoadMessageSelect(char cSelectMes)
 #endif
     }
     
+#ifdef TARGET_PC
+    pc_mes_keep_in(0.0f);
+#endif
     bhFontScaleSet(1.0f, 1.0f, 1.0f);
 }
 

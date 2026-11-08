@@ -85,6 +85,9 @@ SAVE_SCREEN* CreateSaveScreen(SAVE_SCREEN* pSave, void* vpWorkPtrSys)
 void DispMessageSelect(char cSelectMes)
 {
     bhFontScaleSet(0.71f, 0.71f, 0.75f);
+#ifdef TARGET_PC
+    pc_mes_keep_in(610.0f);   /* a longer translation's line moved left to end inside the screen (pc/glue/save_glue.c) */
+#endif
 
     switch (cSelectMes) 
     {
@@ -159,6 +162,9 @@ void DispMessageSelect(char cSelectMes)
         break;
     }
     
+#ifdef TARGET_PC
+    pc_mes_keep_in(0.0f);
+#endif
     bhFontScaleSet(1.0f, 1.0f, 1.0f);
 }
 
