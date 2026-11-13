@@ -424,6 +424,11 @@ Sint32	njReleaseTexture(NJS_TEXLIST *texlist)
     for (i = 0; i < tex_num; i++)
     {
         p = (NJS_TEXMEMLIST*)texlist->textures[i].texaddr;
+#ifdef TARGET_PC
+        /* never uploaded (a mod's room file whose record takes another look than its models, its texture
+           table short of what the room reads): nothing to release; read here, it crashed leaving the room */
+        if (p == NULL) continue;
+#endif
         
         if (p->globalIndex != -1)
         {
